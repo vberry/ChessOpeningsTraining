@@ -1,7 +1,7 @@
 [project]
-name = "chessopeningtrainer"
+name = "chessopeningstraining"
 version = "0.1.0"
-description = "Add your description here"
+description = "A set of programs to manage and use chess opening repertoires"
 authors = [
     { name = "Vincent Berry", email = "vberry@lirmm.fr" }
 ]
@@ -53,4 +53,4 @@ dev-dependencies = []
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/chessopeningtrainer"]
+packages = ["src/chessopeningstraining"]
