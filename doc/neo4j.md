@@ -18,6 +18,23 @@ MATCH (:Position)-[m:MOVE]->(:Position) WHERE m.id=10 RETURN m
 ## Getting all moves from a position indicated by a fen:
 MATCH (p:Position)-[m:MOVE]->() WHERE p.fen='rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq -' RETURN m.move
 
+## Getting connected nodes:
+MATCH (n) MATCH (n)-[r]-() RETURN n,r : will return all nodes that have a relationship to another node or nodes, irrespective of the direction of the relationship.
+MATCH (p:Position{id:966})-[*0..]->(autre) RETURN autre.id  : all nodes that can be accessed from pos° 966
+
+
+All nodes not reachable from the starting position:
+MATCH (Position{id:0})-[:MOVE*]->(conn:Position)
+WITH collect(distinct conn) as connected
+MATCH (p:Position) WHERE NOT p IN connected
+RETURN p.id
+
+Deleting all these nodes and their relationships:
+MATCH (Position{id:0})-[:MOVE*]->(conn:Position)
+WITH collect(distinct conn) as connected
+MATCH (p:Position) WHERE NOT p IN connected
+DETACH DELETE p
+
 # DELETING :
 ## Deleting a node: 
 MATCH (n:Person {name: 'Tom Hanks'}) DELETE n

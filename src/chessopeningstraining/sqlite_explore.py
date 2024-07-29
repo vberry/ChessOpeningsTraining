@@ -1,3 +1,6 @@
+# This is a warm up script that examines some content 
+# of an opening book stored in a sqlite file
+
 
 # TO DO : 
 # voir comment passer des positions aux notes (que par le fen ?)
@@ -5,8 +8,10 @@
 #https://stackoverflow.com/questions/66770587/how-do-i-get-the-played-move-by-comparing-two-different-fens
 
 
+import sys
 import sqlite3
-con = sqlite3.connect('KIA.sqlite')
+
+con = sqlite3.connect('../../openings/Semi-slave.sqlite')
 cur = con.cursor()
 cur.execute("SELECT name FROM sqlite_master")
 
@@ -27,12 +32,27 @@ for champ in res:
 	print(champ)
  
 ###  TUPLES d'une TABLE : 
-cur.execute("SELECT * FROM notes")
+cur.execute("SELECT * FROM positions")
 # -> les champs 'note' et 'glyph' ne sont jamais utilisés, il sont toujours vide
 #print(cur.fetchone()) # en donne juste un
 tuples_position = cur.fetchall()
-print('nb de tuples dans table -notes- = ',len(tuples_position)) # donne les suivants
-print('Premier tuple de cette table :\n',tuples_position[0])
+print('nb de tuples dans table -positions- = ',len(tuples_position)) # donne les suivants
+#print('Premier tuple de cette table :\n',tuples_position[0])
+
+cur.execute("SELECT * from positions \
+	where positions.fromfen='rnbqkb1r/pp2pppp/2p2n2/3p4/2PPP3/2N5/PP3PPP/R1BQKBNR b KQkq -'")
+print('Position qui nous intéresse :',cur.fetchone())
+
+# on cherche s'il y a des positions proches de celle du Gambit Marshall (pour laquelle on a une note mais pas de position)
+for p in tuples_position:
+	if p[1].startswith('rnbqkb1r/pp2pppp/2p2n2/3p4/2PPP3/2N5/PP3PPP/R1BQKBNR'):
+		print(p)
+
+cur.execute("SELECT title,frommoves FROM priyomes")
+for t in cur.fetchall():
+	print(t)
+
+sys.exit(2)
 
 ## VALEURS pour un CHAMP d'une TABLE
 print("Valeurs d'un champ d'une table :")

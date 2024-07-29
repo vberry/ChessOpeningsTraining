@@ -1,3 +1,7 @@
+# Explores positions stored in neo4j and navigates onward from the initial position 
+# by choosing moves among those proposed in the DB.
+
+
 from neo4j import GraphDatabase
 from chess import Board
 

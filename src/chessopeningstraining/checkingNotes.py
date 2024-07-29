@@ -1,10 +1,10 @@
 
 # This is to check that table notes refer to positions rather than to moves *from* position
-# If true, this means each *fromfen* must be unique among tuples in the table
+# If true, this means each *fromfen* must be unique among tuples in the notes table
 #
-#  Result: indeed, this is true on the 6 opening files I got
+#  Result: indeed, this is true on the 6 opening book files I got
 #
-# This means 'fromfen' should be read as 'FOR fen'
+# This means 'fromfen' should be read as 'FOR fen' in the notes table
 #
 import sqlite3
 import sys
