@@ -1,9 +1,13 @@
-# Transforms positions and notes from an sqlite db of the CPT (?) old ipad app
+# Transforms positions and notes from an sqlite db of the CPT/COT (?) old ipad app
 # into the creation of a graph for the neo4j graph database system
 
-# PB in this v1: adding constraints ake the addition of nodes and moves very slow !!!!!
-#  -> see v2, but this is inherent to constraints (and underlying indexes: takes more time to create
-# with benefit in reducing query time afterwards
+# in v2 we try to solve this pbm:
+# with constraints, elements of the graph are slower to generate
+#
+# - we define constraints first as proposed by best practices
+# - we use MERGE and not CREATE as it can use the index defined by the constraint to quickly check that no such node with same id exists
+# - we add indexes to accelerate future queries 
+
 
 import sqlite3
 import sys
@@ -114,9 +118,17 @@ for (comment,fen,id) in notes:
 print('Skipping %d notes not corresponding to actual positions' % unreferenced)
 print('Reporting %d notes' % (len(notes)-unreferenced))
 
-stop = 5
-# Create graph nodes 
+################## Creating graph nodes 
 CREATION=[]
+
+############# 1) Adding constraints
+CREATION.append('CREATE CONSTRAINT pos_uniq_id FOR (p:Position) REQUIRE p.id IS UNIQUE  ;')
+CREATION.append('CREATE CONSTRAINT mov_uniq_id FOR ()-[m:Move]->() REQUIRE m.id IS UNIQUE ;')
+# Only available in the entreprise edition:
+# CREATION.append('CREATE CONSTRAINT FOR (p:Position)  REQUIRE (p.fen) IS NOT NULL;')
+
+############ 2) Creating Position nodes
+stop = 5
 for fen,content in nodes.items():
     if type(content) == tuple:
         (id,comment) = content
@@ -125,19 +137,35 @@ for fen,content in nodes.items():
         comment = comment.replace("'","\\'") # single quotes
         comment = comment.replace('"','\\"') # double quotes
         # '\n' two-character sequence is not a pbm (checked) 
-        CREATION.append( "CREATE (n"+str(id)+":Position {id: "+str(id)+", fen:'"+fen+"', comment:'"+comment+"'})" ) 
+        CREATION.append( "MERGE (n"+str(id)+":Position {id: "+str(id)+"})" + \
+                    " ON CREATE SET n"+str(id)+".fen ='" + fen + "', n"+str(id)+".comment = '" + \
+                     comment+"';" ) 
     else:
         id = content
-        CREATION.append( "CREATE (n"+str(id)+":Position {id: "+str(id)+", fen:'"+fen+"'})" ) 
-
+        CREATION.append( "MERGE (n"+str(id)+":Position {id: "+str(id)+"})" + \
+                        " ON CREATE SET n"+str(id)+".fen ='" + fen + "';" ) 
+        
 #print(CREATION)
     # stop -= 1
     # if stop == 0:  
     #     break
 # sys.exit(1)
 
-# Create move relationships
-stop = 5
+#####       IMPORTANT NOTE: if we put a ';' here in CREATION in between nodes and relationship creation 
+#####           this ends the current transaction so that we cannot use n<id> nodes variable anymore,
+#####           it makes the db server create new nodes instead of referring to those we created
+
+
+####### 3) Adding indexes on Positions to make queries faster:
+CREATION.append(';') # to be sure to end previous transactions
+CREATION.append('CREATE INDEX i_pos_fen FOR (p:Position) ON p.fen;') # in case we need to look for a node from its fen
+CREATION.append('CREATE FULLTEXT INDEX i_pos_comment FOR (p:Position) ON EACH [p.comment]') # as we will allow to search comments later on
+#CREATION.append('CREATE INDEX i_pos_id FOR (p:Position) ON p.id;') # <- forbidden  as there is already a constraint ensuring this
+
+
+############ 4) Create Move relationships
+stop = 3
+CREATION.append(';') # making move creation a separate transaction to observe execution times separately
 for m_id in moves:
     move = moves[m_id]['label']
     from_fen = moves[m_id]['from']
@@ -153,19 +181,28 @@ for m_id in moves:
         t_id = t_content[0]
     else:
         t_id = t_content
-    CREATION.append( "CREATE (n"+str(s_id)+")-[:Move {id: "+str(m_id)+", move:'"+move+"', ordinal:"+str(ordinal)+"}]->(n"+str(t_id)+")" )
-            
+     
+    CREATION.append( " MATCH (from:Position {id:"+str(s_id)+"}) " + \
+                     " OPTIONAL MATCH (to:Position {id:"+str(t_id)+"})" + \
+                     " MERGE (from)-[:Move {id:"+str(m_id)+", move:'" +move+ \
+                        "', ordinal:" +str(ordinal)+ "}]->(to) ;" )
+
     # stop -= 1
     # if stop == 0: 
     #     break
+
+########### 5) Adding index for positions to accelerate queries
+# CREATION.append(';') # necessary to end previous transaction creating all Position nodes
+# CREATION.append('CREATE INDEX i_move_id FOR ()-[m:Move]-() ON m.id;') <- forbidden: there is already a constraint ensuring this
 
 # Ask for the removal of all positions not reachable from the initial position 
 # (this happens maybe because the ipad app allowed to define positions in a book out of nowhere,
 #   or because it was not cleaned properly when deleting moves leading to such positions)
 CREATION.append(';')
-CREATION.append('MATCH (Position{id:0})-[:Move*]->(conn:Position) \
-                    WITH collect(distinct conn) as connected \
-                    MATCH (p:Position) WHERE NOT p IN connected DETACH DELETE p ;')
+# note:  :Move* is not working as it also lists node 0 (initial position) among others...
+CREATION.append('MATCH (Position{id:0})-[*0..]->(conn:Position)'+ \
+                   ' WITH collect(distinct conn) as connected' + \
+                   ' MATCH (p:Position) WHERE NOT p IN connected DETACH DELETE p ;')
 
 # TO DO : transform this into existence and uniqueness for a property key value (id for positions)
 # # Q: is it the same for move id? <- relationship and no node)?
