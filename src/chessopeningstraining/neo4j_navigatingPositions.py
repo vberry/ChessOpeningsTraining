@@ -5,6 +5,7 @@
 from neo4j import GraphDatabase
 from chess import Board
 
+from utils.env_file.read_env_file import get_env_variables_from_file
 
 def moving_forward(position_id):
     # Get position with this id
@@ -14,7 +15,7 @@ def moving_forward(position_id):
     board = Board(records[0]['fen'])
     print(board)
     # Gets available moves from here
-    records, _ , _ = driver.execute_query("MATCH (p:Position)-[m:MOVE]->(p2:Position) WHERE p.id=$id \
+    records, _ , _ = driver.execute_query("MATCH (p:Position)-[m:Move]->(p2:Position) WHERE p.id=$id \
                                                RETURN m.move as move, p2.id as next_id",\
                                                id = position_id, database_="neo4j")
     if len(records)==0: 
@@ -31,9 +32,12 @@ def moving_forward(position_id):
     print('prochaine position = ',next_position_id)
     moving_forward(next_position_id)
 
-###############@#   MAIN  ####################
-AUTH = ("neo4j", "COTextract")
-URI = "neo4j://localhost"
+##############£       MAIN           ###########################
+
+environ = get_env_variables_from_file('../../variables.env')
+AUTH = (environ['NEO4J_USER'],environ['NEO4J_PASSWORD'])
+URI = environ['NEO4J_URI']
+
 with GraphDatabase.driver(URI, auth=AUTH) as driver:
     driver.verify_connectivity()
     print("Connection established.")

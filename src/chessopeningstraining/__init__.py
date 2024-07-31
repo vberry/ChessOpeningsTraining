@@ -1,2 +1,2 @@
 def hello() -> str:
-    return "Hello from chessopeningtrainer!"
+    return "Chess openings training."
