@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
-
+# not be put in git
+variables.env
 # venv
 .venv

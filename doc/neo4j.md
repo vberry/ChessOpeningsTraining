@@ -6,6 +6,44 @@ HTTP enabled on 0.0.0.0:7474.
 
 Puis dans le navigateur on va dans http://localhost:7474 et on se trouve sur l'interface web
 
+# Cypher cheat sheet:
+https://neo4j.com/docs/cypher-cheat-sheet/5/auradb-enterprise/
+
+# INTERRUPTING LONG transaction: 
+SHOW TRANSACTIONS
+TERMINATE TRANSACTION "neo4j-transaction-1461"
+
+# DELETING :
+## Deleting a node: 
+MATCH (n:Person {name: 'Tom Hanks'}) DELETE n
+## Deleting all Position nodes: 
+MATCH (n:Position) DELETE n
+## Deleting all nodes and relationships in db: 
+MATCH (n) DETACH DELETE n
+# Deleting constraints is more painfull by hand:
+SHOW CONSTRAINTS yield name RETURN "DROP CONSTRAINT " + name + ";";
+
+# CONSTRAINTS : 
+Graph academy: 
+- "Constraints are internally encoded as indexes"
+- "Best practice: define a uniqueness constraint for evey node"
+- "Best practice is to create constraints before adding data to the graph": pbm this makes the addition very slow!
+- Existence constraints apply on nodes and rel°
+- =Node key: "existence and uniqueness" constraint for a node: we need that for Pos° 
+- for Move ids we need also existence and uniqueness.
+
+SHOW CONSTRAINT
+CREATE CONSTRAINT FOR (p:Position) REQUIRE p.id IS UNIQUE  ;
+DROP CONSTRAINT constraint_3432423
+
+ATTENTION : StackOverflow oct 2016: "There are no indexes on relationships, so any CREATE UNIQUE or MERGE operation like what you have above must scan all relationships of that type and compare property values to see if that relationship already exists"
+
+# INDEXES
+Graph academy: 
+- "they allow the graphe engine to retrieve data quickly
+- Create indexes after data has been put into the graph
+- Indexes makes creating data slower but retreiving it faster
+-> for positions' fens (and comments?) we can create an index of type TEXT that will allow to find not only exact fens (as type RANGE) but also to query for subparts of the fen (TEXT: optimized for queries filtering with the STRING operators CONTAINS and ENDS WITH) 
 
 
 # GETTING INFO
@@ -34,14 +72,6 @@ MATCH (Position{id:0})-[:MOVE*]->(conn:Position)
 WITH collect(distinct conn) as connected
 MATCH (p:Position) WHERE NOT p IN connected
 DETACH DELETE p
-
-# DELETING :
-## Deleting a node: 
-MATCH (n:Person {name: 'Tom Hanks'}) DELETE n
-## Deleting all Position nodes: 
-MATCH (n:Position) DELETE n
-## Deleting all nodes and relationships in db: 
-MATCH (n) DETACH DELETE n
 
 # Savoir si un noeud contient une propriété : 
 MATCH (p:Position) WHERE p.id = 1 RETURN p.commentaire IS  NULL
