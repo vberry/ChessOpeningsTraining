@@ -21,7 +21,7 @@ def check_opening_file(filename):
     # -> les champs 'note' et 'glyph' ne sont jamais utilisés, il sont toujours vide
     #print(cur.fetchone()) # en donne juste un
     tuples_notes = cur.fetchall()
-    print('nb de tuples dans table -notes- = ',len(tuples_notes)) # donne les suivants
+    print('nb de tuples dans la table -notes- = ',len(tuples_notes)) # donne les suivants
 
     all_fens = {}
     for row in tuples_notes:
@@ -41,6 +41,6 @@ mypath = sys.argv[1]
 
 for f in listdir(mypath):
     name=join(mypath, f)
-    if isfile(name):
+    if isfile(name) and name.endswith('sqlite'):
         check_opening_file(name)
 #print('Premier tuple de cette table :\n',tuples_position[0])
