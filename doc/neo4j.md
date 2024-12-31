@@ -4,7 +4,7 @@ docker run  --restart always -p7474:7474 -p7687:7687 neo4j
 Bolt enabled on 0.0.0.0:7687.
 HTTP enabled on 0.0.0.0:7474.
 
-Puis dans le navigateur on va dans http://localhost:7474 et on se trouve sur l'interface web
+Then in a browser, open http://localhost:7474 and you get to the web GUI interface of neo4J
 
 # Cypher cheat sheet:
 https://neo4j.com/docs/cypher-cheat-sheet/5/auradb-enterprise/
@@ -36,7 +36,7 @@ SHOW CONSTRAINT
 CREATE CONSTRAINT FOR (p:Position) REQUIRE p.id IS UNIQUE  ;
 DROP CONSTRAINT constraint_3432423
 
-ATTENTION : StackOverflow oct 2016: "There are no indexes on relationships, so any CREATE UNIQUE or MERGE operation like what you have above must scan all relationships of that type and compare property values to see if that relationship already exists"
+WARNING: StackOverflow oct 2016: "There are no indexes on relationships, so any CREATE UNIQUE or MERGE operation like what you have above must scan all relationships of that type and compare property values to see if that relationship already exists"
 
 # INDEXES
 Graph academy: 
@@ -73,11 +73,11 @@ WITH collect(distinct conn) as connected
 MATCH (p:Position) WHERE NOT p IN connected
 DETACH DELETE p
 
-# Savoir si un noeud contient une propriété : 
+# Knowing if a node contains a property:
 MATCH (p:Position) WHERE p.id = 1 RETURN p.commentaire IS  NULL
 -> True signifie que pas de champ commentaire
 
-# AJOUTER UNE PROPRIETE a un NOEUD (+=) : 
+# Adding a property to a node (+=): 
 MATCH (p {name: 'Peter'})
 SET p += {age: 38, hungry: true, position: 'Entrepreneur'}
 RETURN p.name, p.age, p.hungry, p.position

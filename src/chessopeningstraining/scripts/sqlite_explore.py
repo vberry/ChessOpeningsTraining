@@ -11,7 +11,7 @@
 import sys
 import sqlite3
 
-con = sqlite3.connect('../../openings/Semi-slave.sqlite')
+con = sqlite3.connect('../../../openings/Semi-slave.sqlite')
 cur = con.cursor()
 cur.execute("SELECT name FROM sqlite_master")
 

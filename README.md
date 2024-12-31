@@ -13,6 +13,14 @@ The main app allowing to comfortably explore and exploit the data remains to be 
 ## Dev notes
 Tests should be provided for each function
 As much as possible ask to run tests first when asking to run a script (see example.py)
-Each script (not notebook) can be run from the project's root folder by typing:
-<code>uv run src/chessopeningstraining/script_name.py arg1 arg2 ...</code>
 
+The project currently contains exploratory python scripts and notebooks.
+
+### Scripts
+Each script can be run from the project's root folder by typing:
+<code>uv run src/chessopeningstraining/script/script_name.py arg1 arg2 ...</code>
+
+### Notebooks
+I currently run notebooks by first launching Jupyter lab (that displays nicely SVg images) and opening them from this app.
+In this way, the SVG files are displayed fine. 
+There might be a way to launch jupyter from the uv project/package manager, but how to do that?

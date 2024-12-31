@@ -6,7 +6,7 @@ from utils.env_file.read_env_file import get_env_variables_from_file
 
 ##############£       MAIN           ###########################
 
-environ = get_env_variables_from_file('../../variables.env')
+environ = get_env_variables_from_file('../../../variables.env')
 AUTH = (environ['NEO4J_USER'],environ['NEO4J_PASSWORD'])
 URI = environ['NEO4J_URI']
 

@@ -1,4 +1,4 @@
-Contains progs to handle opening books from Chess Opening Trainer (COT) <- right name?
+Contains progs to handle opening books from *Chess Opening Trainer* (COT) <- correct name?
 This is an old app that existed on iPad in the early 2010s (on iOS). 
 
 The content of a COT opening book is stored in a graph database with neo4j.
