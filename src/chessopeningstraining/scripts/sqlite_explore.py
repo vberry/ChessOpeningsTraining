@@ -3,9 +3,9 @@
 
 
 # TO DO : 
-# voir comment passer des positions aux notes (que par le fen ?)
-# voir aussi How do i get the played move by comparing two different fens? :
-#https://stackoverflow.com/questions/66770587/how-do-i-get-the-played-move-by-comparing-two-different-fens
+# find how to go from positions to notes (only be fen?)
+# See alors: *How do i get the played move by comparing two different fens?* :
+#   https://stackoverflow.com/questions/66770587/how-do-i-get-the-played-move-by-comparing-two-different-fens
 
 
 import sys
