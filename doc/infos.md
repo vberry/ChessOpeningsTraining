@@ -18,9 +18,9 @@ The content of the db can be seen this way: http://localhost:7474
 
 # NOTES
 - on peut créer des contraintes d'unicité : il faut faire ça sur les noeuds représentant des positions: 
-*Create unique node property constraints to ensure that property values are unique for all nodes with a specific label. Adding the unique constraint, implicitly adds an index on that property.*
+*Create unique node property constraints to ensure that property values are unique for all nodes with a specific label. Adding the unique constraint, implicitly adds an index on that property.* Example:
 `CREATE CONSTRAINT FOR (n:Movie) REQUIRE (n.title) IS UNIQUE`
 
-- Create indexes on one or more properties for all nodes that have a given label. Indexes are used to increase search performance : `CREATE INDEX FOR (m:Movie) ON (m.released)`
+- Create indexes on one or more properties for all nodes that have a given label. Indexes are used to increase search performance. Example: `CREATE INDEX FOR (m:Movie) ON (m.released)`
 
 - 
