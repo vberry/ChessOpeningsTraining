@@ -1,47 +1,82 @@
 import sqlite3
 import chess
+import os
+books_file='..\..\openings'
+bf=os.listdir(books_file)
+books=[]
+for file in bf:
+    if file.endswith('.sqlite'):
+        books.append(file)
 
-liste_fichier=["anti-siciliennes.sqlite","Debut_Reti.sqlite", "KIA.sqlite", "Rossolimo.sqlite", "Semi-slave.sqlite","Sicilienne Dragon.sqlite"]
 def ask_opening():
     c="0"
-    while not c.isdigit() or not (1 <= int(c) and int(c)<= len(liste_fichier)):
-        print("merci de choisir une ouverture")
-        c=input(f"choisir ouverture:\n" "1- anti-siciliennes\n" "2- Debut_Reti\n" "3- KIA\n" "4- Rossolimo\n" "5- Semi-slave\n" "6- Sicilienne Dragon\n")
+    while not c.isdigit() or not (1 <= int(c) and int(c)<= len(books)):
+        for i in range(len(books)):
+            print(f"{i+1} -  {books[i]}")
+        c = input("Choose an opening: ")
     return c
-    #position de départ echiquier fen : rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -
+    #starting position of the board rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -
+def ask_color():
+    color="0"
+    while not color.isdigit() or not (1 <= int(color) and int(color)<= 2):
+        color = input(f"\n1-White\n2-Black\nChoose a color:")
+    if int(color)==1:
+        return 1
+    else:
+        return 2
+
 
 def find_moves_from_fen(fen):
     req=("SELECT * FROM positions where fromfen = '"+fen+"'") 
     result=cur.execute(req)
-    liste_coups = []
+    move  = []
     rows = result.fetchall()
     for row in rows:
-        liste_coups.append(row[2])
-    return liste_coups
+        move.append(row[2])
+    return move   
 
+def find_notes_from_fen(fen):
+    req=("SELECT * FROM notes where fromfen = '"+fen+"'") 
+    result=cur.execute(req)
+    notes  = []
+    rows = result.fetchall()
+    for row in rows:
+        notes.append(row[2])
+    if notes!=[]:
+        print (notes)
 
-# MAIN 
+# MAIN
 c=ask_opening()
-conn = sqlite3.connect(rf"..\..\openings\{liste_fichier[int(c)-1]}")  
+chess_color=ask_color()
+conn = sqlite3.connect(rf"..\..\openings\{books[int(c)-1]}")  
 cur = conn.cursor()
 current_fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 board = chess.Board(current_fen)
 moves = ['something to enter while']
+move_list=[]
+color=[]
 while moves:
     moves = find_moves_from_fen(current_fen)
     if not moves:
-        print("fin de l'ouverture")
+        print("End of opening")
     else:
         for i in range(len(moves)):
-            print(f"coup possible : {i} --> {moves[i]}")
-        choix = input("Choisir un coup à jouer : ")
+            print(f"possible move : {i} --> {moves[i]}")
+        choix = input("Choosing a move to play : ")
         while not choix.isdigit() or not (0 <= int(choix) and int(choix)<= len(moves)-1):
             for i in range(len(moves)):
-                print(f"coup possible : {i} --> {moves[i]}")
-            choix = input("Choisir un coup à jouer : ")
+                print(f"possible move : {i} --> {moves[i]}")
+            choix = input("Choosing a move to play: ")
+        print(f'here the action : {moves[int(choix)]}\nand here is the chessboard')
         board.push_san(moves[int(choix)])
+        print(f"------------------\n{board}\n------------------")
         current_fen = board.fen()[:-4] 
-
-
+        find_notes_from_fen(current_fen)#to check 1 0 0 3
+        if board.turn == chess.WHITE:
+            print("white turn")
+            print(f"white play: {moves[int(choix)]}")
+        else:
+            print("black turn") 
+            print(f"black play: {moves[int(choix)]}")
 
 conn.close()
