@@ -31,12 +31,15 @@ dependencies = [
     "pyzmq==26.0.3",
     "six==1.16.0",
     "stack-data==0.6.3",
-    "tornado==6.4.1",
+    "tornado==6.5",
     "traitlets==5.14.3",
     "typing_extensions==4.12.2",
     "wcwidth==0.2.13",
     "chess>=1.10.0",
     "neo4j>=5.22.0",
+    "bottle>=0.13.4",
+    "python-chess>=1.999",
+    "cairosvg>=2.8.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.12"
