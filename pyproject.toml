@@ -53,3 +53,8 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/chessopeningstraining"]
+
+[tool.uv.workspace]
+members = [
+    "src",
+]
