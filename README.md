@@ -8,7 +8,20 @@ I currently chose a graph DB management system: exploring chess openings is like
 
 Chess board visualizations are also tested here in python notebooks.
 
-The main app allowing to comfortably explore and exploit the data remains to be done.
+## A first text app 
+
+A first text app is available in `src/opening_book_explorer`
+It loads available books and trains the player against the book he chosed, with the piece color he chosed.
+
+## To install it: 
+1. clone this repo
+2. install uv if this python tool is not already on your os
+3. `cd` to the root dir
+4. `uv sync` # this will install the required python packages
+
+## To run it: 
+1. `cd src/opening_book_explorer`
+2. `uv run first_prototype.py`
 
 ## Dev notes
 Tests should be provided for each function

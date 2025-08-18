@@ -2,12 +2,16 @@ import sqlite3
 import chess
 import os
 import random
-books_file='../../openings'
-bf=os.listdir(books_file)
+from pathlib import Path # to handle paths whatever the OS
+
+# Loads list of available opening books
+books_folder = Path("../../openings/")
+bf=os.listdir(books_folder)
 books=[]
 for file in bf:
     if file.endswith('.sqlite'):
         books.append(file)
+
 def ask_opening():
     c="0"
     while not c.isdigit() or not (1 <= int(c) and int(c)<= len(books)):
@@ -15,6 +19,7 @@ def ask_opening():
             print(f"{i+1} -  {books[i]}")
         c = input("Choose an opening: ")
     return c
+
 def ask_color():
     color="0"
     while not color.isdigit() or not (1 <= int(color) and int(color)<= 2):
@@ -70,20 +75,17 @@ def printBoard(reverse=False):
         txt="\n".join(lines)
     print(f"------------------\n{txt}\n------------------")
  
- 
- 
- 
-# MAIN
+########################### MAIN
 c=ask_opening()
 chess_color=ask_color()
 current_player=1
-conn = sqlite3.connect(rf"..\..\openings\{books[int(c)-1]}")  
+book = books_folder / books[int(c)-1]
+conn = sqlite3.connect(book)
 cur = conn.cursor()
 current_fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 board = chess.Board(current_fen)
 ob_moves = ['something to enter while']
 move_list=[]
- 
 good_moves=0
 current_life=10
  
