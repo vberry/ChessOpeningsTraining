@@ -2,6 +2,8 @@ import sqlite3
 import chess
 import os
 import random
+import sys
+import re
 from pathlib import Path # to handle paths whatever the OS
 
 # Loads list of available opening books
@@ -62,7 +64,7 @@ def reverseString(string):
     return "".join(list(reversed(string)))
  
 def printBoard(reverse=False):
-    txt=str(board)
+    txt=str(board) 
     lines=txt.split("\n")
     txt2=""
     for i in range(8):
@@ -73,7 +75,9 @@ def printBoard(reverse=False):
         lines=txt.split("\n")
         lines=[reverseString(string) for string in reversed(lines)]
         txt="\n".join(lines)
-    print(f"------------------\n{txt}\n------------------")
+    # Black pieces are printed in reverse video
+    colored = ''.join(["\033[7m"+char+"\033[0m" if char.islower() else char for char in txt])
+    print(f"------------------\n{colored}\n------------------")
  
 ########################### MAIN
 c=ask_opening()
