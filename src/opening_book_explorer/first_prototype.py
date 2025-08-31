@@ -2,8 +2,6 @@ import sqlite3
 import chess
 import os
 import random
-import sys
-import re
 from pathlib import Path # to handle paths whatever the OS
 
 # Loads list of available opening books
